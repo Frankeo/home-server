@@ -1,20 +1,31 @@
 ---
-- hosts: all
+- hosts: localhost
   become: true
   tasks:
-    - name: Install Docker
+    - name: Install required system packages
       apt:
         pkg:
-          - docker
+          - apt-transport-https
+          - ca-certificates
+          - software-properties-common
         state: latest
         update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
     - name: Install FileBrowser
-      ansible.builtin.shell: |
-      docker run \
-        -v /path/to/root:/srv \
-        -v /path/to/filebrowser.db:/database/filebrowser.db \
-        -v /path/to/settings.json:/config/settings.json \
-        -e PUID=$(id -u) \
-        -e PGID=$(id -g) \
-        -p 8080:80 \
-        filebrowser/filebrowser:s6
+      ansible.builtin.shell: docker run -d --name filebrowser -p 8080:8080 hurlenko/filebrowser
