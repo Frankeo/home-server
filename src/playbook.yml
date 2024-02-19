@@ -28,4 +28,17 @@
         update_cache: true
 
     - name: Install FileBrowser
-      ansible.builtin.shell: docker run -d --name filebrowser -p 8080:8080 hurlenko/filebrowser
+      ansible.builtin.shell: docker run -d --name filebrowser --mount type=bind,source=/media,target=/data -p 8080:8080 hurlenko/filebrowser
+
+    - name: Volumes for Jellyfin Config and Cache
+      ansible.builtin.shell: docker volume create jellyfin-config && docker volume create jellyfin-cache
+
+    - name: Install Jellyfin
+      ansible.builtin.shell: docker run -d \
+        --name jellyfin \
+        --net=host \
+        --volume jellyfin-config:/config
+        --volume jellyfin-cache:/cache
+        --mount type=bind,source=/media,target=/media \
+        --restart=unless-stopped \
+        jellyfin/jellyfin
