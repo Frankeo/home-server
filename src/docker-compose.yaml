@@ -16,30 +16,30 @@ services:
     networks:
       - seafile-net
 
-  seafile:
-    image: seafileltd/seafile-mc:latest
-    container_name: seafile
-    ports:
-      - "8090:80"
-#     - "443:443"  # If https is enabled, cancel the comment.
-    volumes:
-      - /var/seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
-      - ./seafdav.conf:/shared/seafile/conf/seafdav.conf
-      # - ./seahub_settings.py:/shared/seafile/conf/seahub_settings.py
-    environment:
-      - DB_HOST=db
-      - DB_ROOT_PASSWD=db_dev  # Requested, the value should be root's password of MySQL service.
-      - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
-      - SEAFILE_ADMIN_EMAIL=me@example.com # Specifies Seafile admin user, default is 'me@example.com'.
-      - SEAFILE_ADMIN_PASSWORD=asecret     # Specifies Seafile admin password, default is 'asecret'.
-      - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
-      - SEAFILE_SERVER_HOSTNAME=192.168.121.86 # Specifies your host name if https is enabled.
-    depends_on:
-      - db
-      - memcached
-    networks:
-      - net
-      - seafile-net
+#   seafile:
+#     image: seafileltd/seafile-mc:latest
+#     container_name: seafile
+#     ports:
+#       - "8090:80"
+# #     - "443:443"  # If https is enabled, cancel the comment.
+#     volumes:
+#       - /var/seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
+#       - ./seafdav.conf:/shared/seafile/conf/seafdav.conf
+#       # - ./seahub_settings.py:/shared/seafile/conf/seahub_settings.py
+#     environment:
+#       - DB_HOST=db
+#       - DB_ROOT_PASSWD=db_dev  # Requested, the value should be root's password of MySQL service.
+#       - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
+#       - SEAFILE_ADMIN_EMAIL=me@example.com # Specifies Seafile admin user, default is 'me@example.com'.
+#       - SEAFILE_ADMIN_PASSWORD=asecret     # Specifies Seafile admin password, default is 'asecret'.
+#       - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
+#       - SEAFILE_SERVER_HOSTNAME=192.168.121.86 # Specifies your host name if https is enabled.
+#     depends_on:
+#       - db
+#       - memcached
+#     networks:
+#       - net
+#       - seafile-net
 
   # authelia:
   #   image: authelia/authelia:latest
@@ -56,15 +56,15 @@ services:
   #   networks:
   #     - net
 
-  apache:
-    image: httpd:latest
-    container_name: flame
-    ports:
-    - '8080:80'
-    volumes:
-    - ./website:/usr/local/apache2/htdocs
-    networks:
-      - net    
+  # apache:
+  #   image: httpd:latest
+  #   container_name: flame
+  #   ports:
+  #   - '8080:80'
+  #   volumes:
+  #   - ./website:/usr/local/apache2/htdocs
+  #   networks:
+  #     - net    
 
   # nginx-proxy-manager:
   #   image: 'jc21/nginx-proxy-manager:latest'

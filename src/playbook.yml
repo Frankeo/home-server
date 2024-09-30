@@ -31,4 +31,4 @@
         - docker-compose-plugin
 
     - name: Setup Docker Containers
-      shell: docker compose up -d
+      shell: sudo docker compose up -d
