@@ -1,0 +1,99 @@
+version: '3.3'
+
+services:
+  db:
+    image: mariadb:10.11
+    environment:
+      - MYSQL_ROOT_PASSWORD=db_dev  # Requested, set the root's password of MySQL service.
+      - MYSQL_LOG_CONSOLE=true
+      - MARIADB_AUTO_UPGRADE=1
+    volumes:
+      - /opt/seafile-mysql/db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+    networks:
+      - seafile-net
+
+  memcached:
+    image: memcached:1.6.18
+    entrypoint: memcached -m 256
+    networks:
+      - seafile-net
+
+  seafile:
+    image: seafileltd/seafile-mc:latest
+    container_name: seafile
+    ports:
+      - "8090:80"
+#     - "443:443"  # If https is enabled, cancel the comment.
+    volumes:
+      - /var/seafile:/shared   # Requested, specifies the path to Seafile data persistent store.
+      - ./seafdav.conf:/shared/seafile/conf/seafdav.conf
+      # - ./seahub_settings.py:/shared/seafile/conf/seahub_settings.py
+    environment:
+      - DB_HOST=db
+      - DB_ROOT_PASSWD=db_dev  # Requested, the value should be root's password of MySQL service.
+      - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
+      - SEAFILE_ADMIN_EMAIL=me@example.com # Specifies Seafile admin user, default is 'me@example.com'.
+      - SEAFILE_ADMIN_PASSWORD=asecret     # Specifies Seafile admin password, default is 'asecret'.
+      - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
+      - SEAFILE_SERVER_HOSTNAME=192.168.121.86 # Specifies your host name if https is enabled.
+    depends_on:
+      - db
+      - memcached
+    networks:
+      - net
+      - seafile-net
+
+  # authelia:
+  #   image: authelia/authelia:latest
+  #   container_name: authelia
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./authelia-conf/users_database.yml:/config/users_database.yml
+  #     - ./authelia-conf/configuration.yml:/config/configuration.yml
+  #     - /opt/authelia:/config
+  #   ports:
+  #     - "9091:9091"
+  #   environment:
+  #     - TZ=Australia/Melbourne
+  #   networks:
+  #     - net
+
+  apache:
+    image: httpd:latest
+    container_name: flame
+    ports:
+    - '8080:80'
+    volumes:
+    - ./website:/usr/local/apache2/htdocs
+    networks:
+      - net    
+
+  # nginx-proxy-manager:
+  #   image: 'jc21/nginx-proxy-manager:latest'
+  #   restart: unless-stopped
+  #   ports:
+  #     # These ports are in format <host-port>:<container-port>
+  #     - '80:80' # Public HTTP Port
+  #     - '443:443' # Public HTTPS Port
+  #     - '81:81' # Admin Web Port
+  #     # Add any other Stream port you want to expose
+  #     # - '21:21' # FTP
+
+  #   # Uncomment the next line if you uncomment anything in the section
+  #   # environment:
+  #     # Uncomment this if you want to change the location of
+  #     # the SQLite DB file within the container
+  #     # DB_SQLITE_FILE: "/data/database.sqlite"
+
+  #     # Uncomment this if IPv6 is not enabled on your host
+  #     # DISABLE_IPV6: 'true'
+
+  #   volumes:
+  #     - /opt/nginx-proxy-manager:/data
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #   networks:
+  #     - net
+
+networks:
+  seafile-net:
+  net:
