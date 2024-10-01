@@ -90,9 +90,9 @@ VERSION="2.5.4"
 ################################
 
 NGINX_IP="127.0.0.1"
-API_USER="user@nginx"
-API_PASS="pass nginx"
-BASE_DIR="/path/nginx_proxy_script/data"
+API_USER="admin@admin.com"
+API_PASS="changeme"
+BASE_DIR="/opt/nginx-proxy-manager"
 
 # Check if config file nginx_proxy_manager_cli.conf exist
 SCRIPT_DIR="$(dirname "$0")"
