@@ -1360,7 +1360,7 @@ generate_certificate() {
     meta: {
       dns_challenge: true,
       dns_provider: duckdns,
-      dns_provider_credentials: dns_duckdns_token=$token,
+      dns_provider_credentials: "dns_duckdns_token=$token",
       propagation_seconds:120,
       letsencrypt_agree: $agree,
       letsencrypt_email: $email
