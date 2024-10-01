@@ -1330,9 +1330,11 @@ delete_certificate() {
 generate_certificate() {
   if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] || [ -z "$TOKEN_DNS" ]; then
     echo -e "\n 🛡️ The --generate-cert option requires a domain, email and token."
-    echo "$TOKEN_DNS"
+    
     usage
   fi
+  DNS_CHALLENGE="dns_duckdns_token=$TOKEN_DNS"
+  echo "$DNS_CHALLENGE"
   echo -e "\n 👀 Checking if Let's Encrypt certificate for domain: $DOMAIN exists..."
 
   RESPONSE=$(curl -s -X GET "$BASE_URL/nginx/certificates" \
@@ -1355,7 +1357,7 @@ generate_certificate() {
 
   echo -e " ⚙️ Generating Let's Encrypt certificate for domain: $DOMAIN..."
 
-  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "$TOKEN_DNS" --argjson agree true '{
+  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "$DNS_CHALLENGE" --argjson agree true '{
     provider: "letsencrypt",
     domain_names: [$domain],
     meta: {
