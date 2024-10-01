@@ -67,7 +67,7 @@ services:
       - net    
 
   nginx-proxy-manager:
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: 'jc21/nginx-proxy-manager:2.9.22'
     restart: unless-stopped
     ports:
       # These ports are in format <host-port>:<container-port>
