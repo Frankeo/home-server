@@ -1328,7 +1328,7 @@ delete_certificate() {
 
 # Generate Let's Encrypt certificate if not exists
 generate_certificate() {
-  if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] [ -z "$TOKEN" ]; then
+  if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] || [ -z "$TOKEN" ]; then
     echo -e "\n 🛡️ The --generate-cert option requires a domain, email and token."
     usage
   fi
