@@ -1354,13 +1354,13 @@ generate_certificate() {
 
   echo -e " ⚙️ Generating Let's Encrypt certificate for domain: $DOMAIN..."
 
-  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "dns_duckdns_token=$TOKEN_DNS" --argjson agree true '{
+  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "$TOKEN_DNS" --argjson agree true '{
     provider: "letsencrypt",
     domain_names: [$domain],
     meta: {
       dns_challenge: true,
       dns_provider: duckdns,
-      dns_provider_credentials: $token,
+      dns_provider_credentials: dns_duckdns_token=$token,
       propagation_seconds:120,
       letsencrypt_agree: $agree,
       letsencrypt_email: $email
