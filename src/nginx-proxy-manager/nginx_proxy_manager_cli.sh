@@ -1330,6 +1330,7 @@ delete_certificate() {
 generate_certificate() {
   if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] || [ -z "$TOKEN_DNS" ]; then
     echo -e "\n 🛡️ The --generate-cert option requires a domain, email and token."
+    echo "$TOKEN_DNS"
     usage
   fi
   echo -e "\n 👀 Checking if Let's Encrypt certificate for domain: $DOMAIN exists..."
@@ -1360,7 +1361,7 @@ generate_certificate() {
     meta: {
       dns_challenge: "true",
       dns_provider: "duckdns",
-      dns_provider_credentials: "dns_duckdns_token=$token",
+      dns_provider_credentials: $token,
       propagation_seconds: "120",
       letsencrypt_agree: $agree,
       letsencrypt_email: $email
