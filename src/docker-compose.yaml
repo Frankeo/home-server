@@ -57,19 +57,20 @@ services:
   #     - net
 
   node:
-    image: "node:8"
+    image: "node:latest"
     container_name: flame
-    user: "node"
     working_dir: /home/node/app
+    restart: unless-stopped
     environment:
       - NODE_ENV=production
     volumes:
       - ./website:/home/node/app
     expose:
-      - "8081"
+      - "4000"
     ports: # use if it is necessary to expose the container to the host machine
-      - "8001:8001"
-    command: "npm start"
+      - "4000:4000"
+    command: >
+      bash -c "npm install && npm start"
     networks:
       - net    
 
