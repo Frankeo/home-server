@@ -1358,10 +1358,10 @@ generate_certificate() {
     provider: "letsencrypt",
     domain_names: [$domain],
     meta: {
-      dns_challenge: true,
-      dns_provider: duckdns,
+      dns_challenge: "true",
+      dns_provider: "duckdns",
       dns_provider_credentials: "dns_duckdns_token=$token",
-      propagation_seconds:120,
+      propagation_seconds: "120",
       letsencrypt_agree: $agree,
       letsencrypt_email: $email
     }
