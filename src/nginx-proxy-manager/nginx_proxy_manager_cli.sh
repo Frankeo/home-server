@@ -503,7 +503,7 @@ while getopts "d:i:p:f:c:b:w:a:l:-:" opt; do
               GENERATE_CERT=true
               DOMAIN="${!OPTIND}"; shift
               EMAIL="${!OPTIND}"; shift
-              TOKEN="${!OPTIND}"; shift
+              TOKEN_DNS="${!OPTIND}"; shift
               ;;
           delete-cert)
               DELETE_CERT=true
@@ -1328,7 +1328,7 @@ delete_certificate() {
 
 # Generate Let's Encrypt certificate if not exists
 generate_certificate() {
-  if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] || [ -z "$TOKEN" ]; then
+  if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] || [ -z "$TOKEN_DNS" ]; then
     echo -e "\n 🛡️ The --generate-cert option requires a domain, email and token."
     usage
   fi
@@ -1354,14 +1354,14 @@ generate_certificate() {
 
   echo -e " ⚙️ Generating Let's Encrypt certificate for domain: $DOMAIN..."
 
-  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "$TOKEN" --argjson agree true '{
+  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "dns_duckdns_token=$TOKEN_DNS" --argjson agree true '{
     provider: "letsencrypt",
     domain_names: [$domain],
     meta: {
-      "dns_challenge":true,
-      "dns_provider":"duckdns",
-      "dns_provider_credentials":"dns_duckdns_token=$token",
-      "propagation_seconds":"120",
+      dns_challenge: true,
+      dns_provider: duckdns,
+      dns_provider_credentials: $token,
+      propagation_seconds:120,
       letsencrypt_agree: $agree,
       letsencrypt_email: $email
     }
