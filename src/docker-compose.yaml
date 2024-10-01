@@ -56,18 +56,25 @@ services:
   #   networks:
   #     - net
 
-  apache:
-    image: httpd:latest
+  node:
+    image: "node:8"
     container_name: flame
-    ports:
-    - '8080:80'
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
     volumes:
-    - ./website:/usr/local/apache2/htdocs
+      - ./website:/home/node/app
+    expose:
+      - "8081"
+    ports: # use if it is necessary to expose the container to the host machine
+      - "8001:8001"
+    command: "npm start"
     networks:
       - net    
 
   nginx-proxy-manager:
-    image: 'jc21/nginx-proxy-manager:2.9.22'
+    image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
     ports:
       # These ports are in format <host-port>:<container-port>
