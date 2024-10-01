@@ -503,6 +503,7 @@ while getopts "d:i:p:f:c:b:w:a:l:-:" opt; do
               GENERATE_CERT=true
               DOMAIN="${!OPTIND}"; shift
               EMAIL="${!OPTIND}"; shift
+              TOKEN="${!OPTIND}"; shift
               ;;
           delete-cert)
               DELETE_CERT=true
@@ -604,7 +605,7 @@ regenerate_all_ssl_certificates() {
   for host_id in "${host_ids[@]}"; do
     echo -e "\n🔄 Regenerating SSL certificate for host ID: $host_id"
     local response=$(curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-      -d '{"id":'"$host_id"',"provider":"duckdns"}' "$NGINX_API_URL/nginx/certificates/generate")
+      -d '{"id":'"$host_id"',"provider":"letsencrypt"}' "$NGINX_API_URL/nginx/certificates/generate")
     if [[ $response == *"error"* ]]; then
       echo -e " ⛔ Error regenerating SSL certificate for host ID: $host_id: $response"
     else
@@ -1327,8 +1328,8 @@ delete_certificate() {
 
 # Generate Let's Encrypt certificate if not exists
 generate_certificate() {
-  if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then
-    echo -e "\n 🛡️ The --generate-cert option requires a domain and email."
+  if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] [ -z "$TOKEN" ]; then
+    echo -e "\n 🛡️ The --generate-cert option requires a domain, email and token."
     usage
   fi
   echo -e "\n 👀 Checking if Let's Encrypt certificate for domain: $DOMAIN exists..."
@@ -1353,10 +1354,17 @@ generate_certificate() {
 
   echo -e " ⚙️ Generating Let's Encrypt certificate for domain: $DOMAIN..."
 
-  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --argjson agree true '{
-    provider: "duckdns",
+  DATA=$(jq -n --arg domain "$DOMAIN" --arg email "$EMAIL" --arg token "$TOKEN" --argjson agree true '{
+
+  
+    provider: "letsencrypt",
     domain_names: [$domain],
     meta: {
+    {
+      "dns_challenge":true,
+      "dns_provider":"duckdns",
+      "dns_provider_credentials":"dns_duckdns_token=$token",
+      "propagation_seconds":"120",
       letsencrypt_agree: $agree,
       letsencrypt_email: $email
     }
@@ -1398,14 +1406,14 @@ enable_ssl_old() {
 
   # Check if a Let's Encrypt certificate exists
   CERT_EXISTS=$(curl -s -X GET "$BASE_URL/nginx/certificates" \
-  -H "Authorization: Bearer $(cat $TOKEN_FILE)" | jq -r --arg domain "$DOMAIN_NAMES" '.[] | select(.provider == "duckdns" and .domain_names[] == $domain) | .id')
+  -H "Authorization: Bearer $(cat $TOKEN_FILE)" | jq -r --arg domain "$DOMAIN_NAMES" '.[] | select(.provider == "letsencrypt" and .domain_names[] == $domain) | .id')
 
   if [ -z "$CERT_EXISTS" ]; then
     echo " ⛔ No Let's Encrypt certificate associated with this host. Generating a new certificate..."
 
     generate_certificate
     CERTIFICATE_ID=$(curl -s -X GET "$BASE_URL/nginx/certificates" \
-    -H "Authorization: Bearer $(cat $TOKEN_FILE)" | jq -r --arg domain "$DOMAIN_NAMES" '.[] | select(.provider == "duckdns" and .domain_names[] == $domain) | .id')
+    -H "Authorization: Bearer $(cat $TOKEN_FILE)" | jq -r --arg domain "$DOMAIN_NAMES" '.[] | select(.provider == "letsencrypt" and .domain_names[] == $domain) | .id')
   else
     echo " ✅ Existing Let's Encrypt certificate found. Using certificate ID: $CERT_EXISTS"
     CERTIFICATE_ID="$CERT_EXISTS"
