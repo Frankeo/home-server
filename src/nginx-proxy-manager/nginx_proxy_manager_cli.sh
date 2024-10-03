@@ -433,7 +433,7 @@ validate_token() {
 #################################
 
 
-while getopts "d:i:p:f:c:b:w:a:l:-:" opt; do
+while getopts "d:i:p:f:c:b:w:a:t:l:-:" opt; do
   case $opt in
     d) DOMAIN_NAMES="$OPTARG" ;;
     i) FORWARD_HOST="$OPTARG" ;;
@@ -443,6 +443,7 @@ while getopts "d:i:p:f:c:b:w:a:l:-:" opt; do
     b) BLOCK_EXPLOITS="$OPTARG" ;;
     w) ALLOW_WEBSOCKET_UPGRADE="$OPTARG" ;;
     a) ADVANCED_CONFIG="$OPTARG" ;;
+    t) CERTIFICATE_ID="$OPTARG" ;;
     l) CUSTOM_LOCATIONS="$OPTARG" ;;
     -)
       case "${OPTARG}" in
@@ -944,21 +945,18 @@ create_new_proxy_host() {
     "domain_names": ["%s"],
     "forward_host": "%s",
     "forward_port": %s,
+    "forward_scheme": "%s",
     "access_list_id": null,
-    "certificate_id": null,
-    "ssl_forced": false,
+    "certificate_id": %s,
+    "ssl_forced": true,
     "caching_enabled": %s,
     "block_exploits": %s,
     "advanced_config": "%s",
-    "meta": {
-      "dns_challenge": null
-    },
     "allow_websocket_upgrade": %s,
-    "http2_support": %s,
-    "forward_scheme": "%s",
+    "http2_support": true,
     "enabled": true,
     "locations": %s
-  }' "$DOMAIN_NAMES" "$FORWARD_HOST" "$FORWARD_PORT" "$CACHING_ENABLED" "$BLOCK_EXPLOITS" "$ADVANCED_CONFIG"  "$ALLOW_WEBSOCKET_UPGRADE" "$HTTP2_SUPPORT" "$FORWARD_SCHEME" "$CUSTOM_LOCATIONS_ESCAPED")
+  }' "$DOMAIN_NAMES" "$FORWARD_HOST" "$FORWARD_PORT" "$FORWARD_SCHEME" "$CERTIFICATE_ID" "$CACHING_ENABLED" "$BLOCK_EXPLOITS" "$ADVANCED_CONFIG" "$ALLOW_WEBSOCKET_UPGRADE" "$CUSTOM_LOCATIONS_ESCAPED")
 # add dns_challenge 
   echo -e "\n Request Data: $DATA"
 
