@@ -8,6 +8,8 @@
           - apt-transport-https
           - ca-certificates
           - software-properties-common
+          - curl
+          - jq
         state: latest
         update_cache: true
 
