@@ -433,17 +433,17 @@ validate_token() {
 #################################
 
 
-while getopts "d:i:p:f:c:b:w:a:t:l:-:" opt; do
+while getopts "d:i:p:f:t:c:b:w:a:l:-:" opt; do
   case $opt in
     d) DOMAIN_NAMES="$OPTARG" ;;
     i) FORWARD_HOST="$OPTARG" ;;
     p) FORWARD_PORT="$OPTARG" ;;
     f) FORWARD_SCHEME="$OPTARG" ;;
+    t) CERTIFICATE_ID="$OPTARG" ;;
     c) CACHING_ENABLED="$OPTARG" ;;
     b) BLOCK_EXPLOITS="$OPTARG" ;;
     w) ALLOW_WEBSOCKET_UPGRADE="$OPTARG" ;;
     a) ADVANCED_CONFIG="$OPTARG" ;;
-    t) CERTIFICATE_ID="$OPTARG" ;;
     l) CUSTOM_LOCATIONS="$OPTARG" ;;
     -)
       case "${OPTARG}" in
