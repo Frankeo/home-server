@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Generate Token
+sudo ./nginx_proxy_manager_cli.sh --info
+
 ## Create Certificate
 sudo ./nginx_proxy_manager_cli.sh --generate-cert home-server-flme.duckdns.org admin@example.com TOKEN_DNS
 sudo ./nginx_proxy_manager_cli.sh --generate-cert *.home-server-flme.duckdns.org admin@example.com TOKEN_DNS
